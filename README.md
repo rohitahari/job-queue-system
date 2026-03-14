@@ -1,76 +1,119 @@
-# Background Job Queue System
+# Distributed Job Queue System
 
-A production-style background job processing system built with FastAPI, Redis, Celery, and PostgreSQL.
+A backend system for asynchronous job processing using FastAPI, Celery, and Redis.
 
-## Architecture
-
-Client → FastAPI API → PostgreSQL → Redis Queue → Celery Worker → Background Processing → Database Update
-
-## Tech Stack
-
-- FastAPI
-- PostgreSQL
-- Redis
-- Celery
-- SQLAlchemy
-
-## Features
-
-- Create asynchronous jobs
-- Track job status
-- Background task processing
-- Distributed worker architecture
-- Persistent job storage
-
-## API Endpoints
-
-Create Job
-
-POST /jobs
-
-Check Job Status
-
-GET /jobs/{job_id}
-
-## Example Flow
-
-1. Client creates job
-2. Job stored in PostgreSQL
-3. Task pushed to Redis queue
-4. Celery worker processes task
-5. Job status updated
-
-## Run Locally
-
-Start Redis
-
-```
-redis-server
-```
-
-Start API
-
-```
-uvicorn app.main:app --reload
-```
-
-Start Worker
-
-```
-celery -A workers.worker.celery worker --loglevel=info
-```
-
-## Example Response
-
-```
-{
-  "job_id": 1,
-  "status": "completed",
-  "result": "Report generated successfully"
-}
-```
+This system allows long-running tasks to run in background workers without blocking the API.
 
 ---
 
-This project demonstrates real backend patterns used in scalable production systems.
+## Features
+
+• Submit jobs through API  
+• Background task processing  
+• Redis message broker  
+• Celery worker execution  
+• Job status tracking  
+
+---
+
+## Tech Stack
+
+Python  
+FastAPI  
+Celery  
+Redis  
+SQLAlchemy  
+
+---
+
+## System Architecture
+
+Client → FastAPI API → Redis Queue → Celery Workers → Database
+
+Flow
+
+1. Client submits job through API  
+2. Job placed into Redis queue  
+3. Celery worker picks task from queue  
+4. Worker processes the job  
+5. Job status updated in database  
+
+---
+
+## Project Structure
+
+app/
+- main.py
+- routes/
+- models/
+- database/
+
+workers/
+- worker.py
+
+tasks/
+- tasks.py
+
+requirements.txt  
+README.md  
+
+---
+
+## Run Locally
+
+Install dependencies
+
+pip install -r requirements.txt
+
+Start Redis
+
+redis-server
+
+Start Celery worker
+
+celery -A workers.worker.celery worker --loglevel=info
+
+Start FastAPI server
+
+python -m uvicorn app.main:app --reload --port 8001
+
+---
+
+## Example API Usage
+
+Create job
+
+POST /jobs
+
+{
+"task_type": "generate_report"
+}
+
+Response
+
+{
+"job_id": 1,
+"status": "pending"
+}
+
+Check job status
+
+GET /jobs/1
+
+Response
+
+{
+"job_id": 1,
+"status": "completed",
+"result": "Report generated successfully"
+}
+
+---
+
+## Future Improvements
+
+• task retries  
+• scheduled jobs  
+• distributed worker scaling  
+• monitoring dashboard
 
